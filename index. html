@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Just for You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(120deg, #ffdce5, #ffeaf4);
+      font-family: 'Quicksand', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .background {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      color: #ff4d88;
+      font-size: 1.2rem;
+      opacity: 0.7;
+      animation: float 8s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: white;
+      max-width: 600px;
+      margin: 8% auto;
+      padding: 3rem 2rem;
+      border-radius: 30px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      animation: fadeInUp 1.5s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5rem;
+      color: #e6005c;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #444;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+      text-align: justify;
+      min-height: 140px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .yes {
+      background-color: #ff4d88;
+      color: white;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    .yes:hover {
+      background-color: #e6005c;
+    }
+
+    .no {
+      background-color: #ddd;
+      color: #444;
+    }
+
+    .no:hover {
+      background-color: #bbb;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    #message {
+      font-size: 1rem;
+      color: #e6005c;
+      margin-top: 1rem;
+      display: none;
+      white-space: pre-line;
+      transition: opacity 0.6s ease-in-out;
+      opacity: 0;
+    }
+
+    #message.show {
+      opacity: 1;
+    }
+
+    #retry {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    #retry button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      background-color: #ccc;
+      color: #333;
+      border: none;
+      cursor: pointer;
+    }
+
+    #music {
+      position: fixed;
+      bottom: 15px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    audio {
+      outline: none;
+    }
+
+    .firework {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff4d88;
+      animation: explode 1s ease-out forwards;
+      z-index: 5;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(10); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="background" id="heart-background"></div>
+
+<div class="container">
+  <h1>Hey, I Need to Tell You Something...</h1>
+  <p id="main-message"></p>
+  <div class="buttons" id="response-buttons" style="display: none;">
+    <button class="yes" onclick="respond(true)">Okay</button>
+    <button class="no" onclick="respond(false)">Umm...</button>
+  </div>
+  <div id="message"></div>
+  <div id="retry">
+    <button onclick="resetPage()">Try Again</button>
+  </div>
+</div>
+
+<script>
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.textContent = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 1.5 + 1) + "rem";
+    heart.style.animationDuration = (5 + Math.random() * 3) + "s";
+    document.getElementById("heart-background").appendChild(heart);
+    setTimeout(() => heart.remove(), 8000);
+  }
+
+  setInterval(createHeart, 250);
+
+  function typeMessage(text, elementId, callback) {
+    const el = document.getElementById(elementId);
+    el.classList.add("show");
+    el.style.display = 'block';
+    let i = 0;
+    el.textContent = "";
+    const interval = setInterval(() => {
+      el.textContent += text.charAt(i);
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+        if (callback) callback();
+      }
+    }, 30 + Math.random() * 30);
+  }
+
+  const mainText = `Hi Vel, I know this might be hard to believe, but I’ve been meaning to say this for a while now. I’ve actually started liking you since we began chatting about a year ago. I know this might not be the best time to admit it—you’re always busy, and I understand that—but I just can’t keep it in any longer. So here I am, finally saying it.\n\nbut I’m not asking you to like me back. I just wanted you to know that I like you.`;
+
+  typeMessage(mainText, "main-message", () => {
+    document.getElementById("response-buttons").style.display = "flex";
+  });
+
+  function respond(isYes) {
+    const messageEl = document.getElementById("message");
+    const retryEl = document.getElementById("retry");
+
+    if (isYes) {
+      typeMessage("OMG really?! You have no idea how happy that makes me.", "message");
+      triggerFireworks();
+    } else {
+      typeMessage("That’s okay. I just wanted you to know how I feel. No pressure, no expectations—just honesty.", "message");
+    }
+
+    setTimeout(() => {
+      messageEl.scrollIntoView({ behavior: 'smooth' });
+      retryEl.style.display = "block";
+    }, 1000);
+  }
+
+  function triggerFireworks() {
+    for (let i = 0; i < 12; i++) {
+      const firework = document.createElement("div");
+      firework.classList.add("firework");
+      firework.style.left = `${Math.random() * 100}vw`;
+      firework.style.top = `${Math.random() * 100}vh`;
+      firework.style.backgroundColor = getRandomColor();
+      document.body.appendChild(firework);
+      setTimeout(() => firework.remove(), 1000);
+    }
+  }
+
+  function getRandomColor() {
+    const colors = ['#ff4d88', '#ffcc00', '#66ccff', '#33cc33', '#ff6666', '#9966cc'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  function resetPage() {
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
