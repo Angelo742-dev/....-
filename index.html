@@ -67,15 +67,13 @@
       margin-bottom: 1rem;
     }
 
-    #main-message {
+    p {
       font-size: 1.1rem;
       color: #444;
       margin-bottom: 2rem;
       line-height: 1.6;
       text-align: justify;
-      white-space: pre-line;
-      min-height: 250px; /* Fix to prevent sudden size jump */
-      transition: min-height 0.3s ease;
+      min-height: 140px;
     }
 
     .buttons {
@@ -146,6 +144,17 @@
       cursor: pointer;
     }
 
+    #music {
+      position: fixed;
+      bottom: 15px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    audio {
+      outline: none;
+    }
+
     .firework {
       position: fixed;
       width: 10px;
@@ -169,7 +178,7 @@
 <div class="container">
   <h1>Hey, I Need to Tell You Something...</h1>
   <p id="main-message"></p>
-  <div class="buttons">
+  <div class="buttons" id="response-buttons" style="display: none;">
     <button class="yes" onclick="respond(true)">Okay</button>
     <button class="no" onclick="respond(false)">Umm...</button>
   </div>
@@ -193,10 +202,10 @@
 
   setInterval(createHeart, 250);
 
-  const mainText = `Hi Vel, I know this might be hard to believe, but I’ve been meaning to say this for a while now. I’ve actually started liking you since we began chatting about a year ago. I know this might not be the best time to admit it—you’re always busy, and I understand that—but I just can’t keep it in any longer. So here I am, finally saying it.\n\nI’m not asking you to like me back. I just wanted you to know that I like you.`;
-
-  function typeWriterEffect(text, elementId, callback) {
+  function typeMessage(text, elementId, callback) {
     const el = document.getElementById(elementId);
+    el.classList.add("show");
+    el.style.display = 'block';
     let i = 0;
     el.textContent = "";
     const interval = setInterval(() => {
@@ -206,25 +215,26 @@
         clearInterval(interval);
         if (callback) callback();
       }
-    }, 40);
+    }, 30 + Math.random() * 30);
   }
 
-  window.onload = () => {
-    typeWriterEffect(mainText, "main-message");
-  };
+  const mainText = `Hi Vel, I know this might be hard to believe, but I’ve been meaning to say this for a while now. I’ve actually started liking you since we began chatting about a year ago. I know this might not be the best time to admit it—you’re always busy, and I understand that—but I just can’t keep it in any longer. So here I am, finally saying it.\n\nbut I’m not asking you to like me back. I just wanted you to know that I like you.`;
+
+  typeMessage(mainText, "main-message", () => {
+    document.getElementById("response-buttons").style.display = "flex";
+  });
 
   function respond(isYes) {
     const messageEl = document.getElementById("message");
     const retryEl = document.getElementById("retry");
 
     if (isYes) {
-      typeWriterEffect("OMG really?! You have no idea how happy that makes me.\n\nLet’s make more memories together!", "message");
+      typeMessage("OMG really?! You have no idea how happy that makes me.", "message");
       triggerFireworks();
     } else {
-      typeWriterEffect("That’s okay. I just wanted you to know how I feel. No pressure, no expectations—just honesty.", "message");
+      typeMessage("That’s okay. I just wanted you to know how I feel. No pressure, no expectations—just honesty.", "message");
     }
 
-    messageEl.classList.add("show");
     setTimeout(() => {
       messageEl.scrollIntoView({ behavior: 'smooth' });
       retryEl.style.display = "block";
@@ -254,4 +264,4 @@
 </script>
 
 </body>
-  </html>
+</html>
