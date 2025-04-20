@@ -74,7 +74,8 @@
       line-height: 1.6;
       text-align: justify;
       white-space: pre-line;
-      min-height: 150px;
+      min-height: 250px; /* Fix to prevent sudden size jump */
+      transition: min-height 0.3s ease;
     }
 
     .buttons {
@@ -145,17 +146,6 @@
       cursor: pointer;
     }
 
-    #music {
-      position: fixed;
-      bottom: 15px;
-      right: 20px;
-      z-index: 10;
-    }
-
-    audio {
-      outline: none;
-    }
-
     .firework {
       position: fixed;
       width: 10px;
@@ -179,7 +169,6 @@
 <div class="container">
   <h1>Hey, I Need to Tell You Something...</h1>
   <p id="main-message"></p>
-
   <div class="buttons">
     <button class="yes" onclick="respond(true)">Okay</button>
     <button class="no" onclick="respond(false)">Umm...</button>
@@ -191,12 +180,6 @@
 </div>
 
 <script>
-  const mainText = `Hi Vel, I know this might be hard to believe, but I’ve been meaning to say this for a while now. I’ve actually started liking you since we began chatting about a year ago. I know this might not be the best time to admit it—you’re always busy, and I understand that—but I just can’t keep it in any longer. So here I am, finally saying it.\n\nBut I’m not asking you to like me back. I just wanted you to know that I like you.`;
-
-  window.onload = () => {
-    typeMessage(mainText, "main-message");
-  };
-
   function createHeart() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
@@ -210,48 +193,38 @@
 
   setInterval(createHeart, 250);
 
-  function typeMessage(text, elementId, callback) {
+  const mainText = `Hi Vel, I know this might be hard to believe, but I’ve been meaning to say this for a while now. I’ve actually started liking you since we began chatting about a year ago. I know this might not be the best time to admit it—you’re always busy, and I understand that—but I just can’t keep it in any longer. So here I am, finally saying it.\n\nI’m not asking you to like me back. I just wanted you to know that I like you.`;
+
+  function typeWriterEffect(text, elementId, callback) {
     const el = document.getElementById(elementId);
-    el.classList.add("show");
-    el.style.display = 'block';
     let i = 0;
-    const lines = text.split("\n");
-    let currentLine = 0;
-    let currentChar = 0;
-
-    function typeNextChar() {
-      if (currentLine >= lines.length) {
+    el.textContent = "";
+    const interval = setInterval(() => {
+      el.textContent += text.charAt(i);
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
         if (callback) callback();
-        return;
       }
-
-      const line = lines[currentLine];
-      if (currentChar < line.length) {
-        el.innerHTML += line[currentChar];
-        currentChar++;
-      } else {
-        el.innerHTML += "<br>";
-        currentLine++;
-        currentChar = 0;
-      }
-
-      setTimeout(typeNextChar, 40);
-    }
-
-    typeNextChar();
+    }, 40);
   }
+
+  window.onload = () => {
+    typeWriterEffect(mainText, "main-message");
+  };
 
   function respond(isYes) {
     const messageEl = document.getElementById("message");
     const retryEl = document.getElementById("retry");
 
     if (isYes) {
-      typeMessage("OMG really?! You have no idea how happy that makes me.\n\nLet’s make more memories together!", "message");
+      typeWriterEffect("OMG really?! You have no idea how happy that makes me.\n\nLet’s make more memories together!", "message");
       triggerFireworks();
     } else {
-      typeMessage("That’s okay. I just wanted you to know how I feel. No pressure, no expectations—just honesty.", "message");
+      typeWriterEffect("That’s okay. I just wanted you to know how I feel. No pressure, no expectations—just honesty.", "message");
     }
 
+    messageEl.classList.add("show");
     setTimeout(() => {
       messageEl.scrollIntoView({ behavior: 'smooth' });
       retryEl.style.display = "block";
